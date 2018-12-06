@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+#container {
+  min-width: 300px;
+  max-width: 800px;
+  height: 400px;
+  margin: 0 auto;
+}
+
+.my-label .highcharts-data-label-box {
+  fill: green;
+  stroke-width: 1px;
+  stroke: black;
+  border-radius: 50px;
+}
