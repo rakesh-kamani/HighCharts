@@ -1,14 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ChartModule } from 'angular2-highcharts';
-
-import * as AnnotationsModule from 'highcharts/modules/annotations';
-
 import * as Highcharts from 'highcharts';
+import Annotations from 'highcharts/modules/annotations.src';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-AnnotationsModule(Highcharts);
+// AnnotationsModule(Highcharts);
 @NgModule({
   declarations: [
     AppComponent
@@ -23,7 +21,7 @@ AnnotationsModule(Highcharts);
 })
 export class AppModule {
   constructor() {
-    AnnotationsModule(Highcharts);
+    Annotations(Highcharts);
   }
 
  }
