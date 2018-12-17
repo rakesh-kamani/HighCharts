@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'DemoApp';
   options = {
       xAxis: {
@@ -19,7 +19,7 @@ export class AppComponent {
       events: {
         render: function() {
           let chart = this,
-            series = chart.series[1],
+            series = chart.series[0],
             points = series.points,
             yAxis = chart.yAxis[0],
             customPoints = [
@@ -28,6 +28,7 @@ export class AppComponent {
               [23.27215019, 41.79327828, 53.45621875],
               [24.0270928, 39.56547765, 53.26893206]
             ],
+            pointDesc = ['"1st Quartile"', '"2nd Quartile"', '"3rd Quartile"'],
             path = [],
             height = 7,
             element,
@@ -36,12 +37,6 @@ export class AppComponent {
             y,
             i,
             pos;
-
-          if (chart.customElements) {
-            chart.customElements.forEach(function(elem) {
-              elem.destroy();
-            });
-          }
 
           chart.customElements = [];
 
@@ -65,7 +60,8 @@ export class AppComponent {
                 element = chart.renderer.rect(x - (width / 2), y, width, height)
                   .attr({
                     strokeWidth: 1,
-                    fill: '#000'
+                    fill: '#000',
+                    id: index + '__' +i
                   })
                   .add()
                   .toFront();
@@ -87,13 +83,27 @@ export class AppComponent {
               chart.customElements.push(element);
             }
           });
-
           chart.customElements.forEach(function(elem) {
+            console.log(elem);
             if (elem.value) {
               elem.on('mouseover', function(e) {
                 pos = elem.getBBox();
 
                 chart.tooltip.destroy();
+
+                console.log(series.data[0].info);
+
+                function getPointDesc(id) {
+                  const arr = id.split('__');
+                  //console.log(pointDesc[parseInt(arr[1])]);
+                  return pointDesc[parseInt(arr[1])];
+                }
+
+                function getSeriesInfo(id) {
+                  const arr = id.split('__');
+                  //console.log;(series.data[parseInt(arr[0])].info);
+                  return series.data[parseInt(arr[0])].info;
+                }
 
                 chart.addAnnotation({
                   id: 'c-tooltip',
@@ -107,7 +117,7 @@ export class AppComponent {
                       x: pos.x - chart.plotLeft + pos.width / 2,
                       y: pos.y - chart.plotTop
                     },
-                    text: 'Value: ' + elem.value
+                      text: 'Series ' + getPointDesc(elem.element.id) + ' ' + getSeriesInfo(elem.element.id) + ' Value: ' + elem.value
                   }]
                 });
 
@@ -116,8 +126,6 @@ export class AppComponent {
               });
             }
           });
-
-
         }
       }
     },
@@ -135,77 +143,80 @@ export class AppComponent {
     series: [{
               showInLegend: false,
               name: 'Series "100-company score"',
-              data: [{ info: 'Point "TOTAL ESG SCORE"', value: "Value: ", y: 12.96511756, color: "white" },
-                    { info: 'Point "ENV"', value: "Value: ", y: 9.122720022, color: "white" },
-                    { info: 'Point "SOC"', value: "Value: ", y: 24.53324925, color: "white" },
-                    { info: 'Point "GOV"', value: "Value: ", y: 6.1988329, color: "white" }]
+              data: [{ info: ' Point "TOTAL ESG SCORE"', value: 'Value: ', y: 12.96511756, color: 'white' },
+                     { info: ' Point "ENV"', value: 'Value: ', y: 9.122720022, color: 'white' },
+                     { info: ' Point "SOC"', value: 'Value: ', y: 24.53324925, color: 'white' },
+                     { info: ' Point "GOV"', value: 'Value: ', y: 6.1988329, color: 'white' }]
             }, {
               showInLegend: false,
               name: 'Series "company score"',
-              data: [{ info: 'Point "TOTAL ESG SCORE"', value: "Value: ", y: 87.03488244, color: "skyblue" },
-                    { info: 'Point "ENV"', value: "Value: ", y: 90.87727998, color: "gray" },
-                    { info: 'Point "SOC"', value: "Value: ", y: 75.46675075, color: "green" },
-                    { info: 'Point "GOV"', value: "Value: ", y: 93.8011671, color: "lightgray" }]
+              data: [{ info: 'Point "TOTAL ESG SCORE"', value: 'Value: ', y: 87.03488244, color: 'skyblue' },
+                     { info: 'Point "ENV"', value: 'Value: ', y: 90.87727998, color: 'gray' },
+                     { info: 'Point "SOC"', value: 'Value: ', y: 75.46675075, color: 'green' },
+                     { info: 'Point "GOV"', value: 'Value: ', y: 93.8011671, color: 'lightgray' }]
+          }, {
+            showInLegend: false,
+            name: 'Series '
           }]
   };
+  ngOnInit() {
+    console.log('ngoninit');
+  }
 
-data = [33,33,19,14]
-options2 = {
-  chart: {
-      type:'bar'
-  },
-  title:{
-      text:'Horizontal Bar'
-  },
-  credits:{enabled:false},
-  plotOptions: {
-      series: {
-          shadow:false,
-          borderWidth:0,
-          dataLabels:{
-              enabled:true,
+    data = [33,33,19,14]
+    options2 = {
+      chart: {
+          type:'bar'
+      },
+      title:{
+          text:'Horizontal Bar'
+      },
+      credits:{enabled:false},
+      plotOptions: {
+          series: {
+              shadow:false,
+              borderWidth:0,
+              dataLabels:{
+                  enabled:true,
+                  formatter:function() {
+                      var pcnt = (this.y / 100) * 100;
+                      return pcnt.toFixed(2) + '%';
+                  }
+              }
+          }
+      },
+      xAxis:{
+          lineColor:'#999',
+          lineWidth:1,
+          tickColor:'#666',
+          categories: ['Climate Strategy', 'Environmental Policy and Management Systems', 'Environmental Reporting', 'Operational Eco Efficiency'],
+          title:{
+              text:'Environmental Factors'
+          },
+      },
+      yAxis:{
+          lineColor:'#999',
+          lineWidth:1,
+          tickColor:'#666',
+          tickWidth:1,
+          tickLength:3,
+          gridLineColor:'#ddd',
+          visible:false,
+          title:{
+              text:'Y Axis Title',
+              rotation:0,
+              margin:100,
+          },
+          labels: {
               formatter:function() {
-                  var pcnt = (this.y / 100) * 100;
+                  var pcnt = (this.value / 100) * 100;
                   return pcnt.toFixed(2) + '%';
               }
           }
-      }
-  },
-  xAxis:{
-      lineColor:'#999',
-      lineWidth:1,
-      tickColor:'#666',
-       categories: ['Climate Strategy', 'Environmental Policy and Management Systems', 'Environmental Reporting', 'Operational Eco Efficiency'],
-      title:{
-          text:'Environmental Factors'
       },
-  },
-  yAxis:{
-      lineColor:'#999',
-      lineWidth:1,
-      tickColor:'#666',
-      tickWidth:1,
-      tickLength:3,
-      gridLineColor:'#ddd',
-      visible:false,
-      title:{
-          text:'Y Axis Title',
-          rotation:0,
-          margin:100,
-      },
-      labels: {
-          formatter:function() {
-              var pcnt = (this.value / 100) * 100;
-              return pcnt.toFixed(2) + '%';
-          }
-      }
-  },
-  series: [{
-      data: this.data,
-      showInLegend: false,
-  }]
-
-}
-
-
+      series: [{
+          data: this.data,
+          showInLegend: false,
+      }]
+    }
 }
